@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/ysmolyar/release-please-test/compare/v1.0.1...v1.0.2) (2025-06-06)
+
+
+### Bug Fixes
+
+* squash commit ([f016c7c](https://github.com/ysmolyar/release-please-test/commit/f016c7c7aa2899f086051f9e00ccf8ab042fe0cb))
+
 ## [1.0.1](https://github.com/ysmolyar/release-please-test/compare/v1.0.0...v1.0.1) (2025-06-06)
 
 
