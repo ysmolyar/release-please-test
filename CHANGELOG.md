@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/ysmolyar/release-please-test/compare/v1.0.0...v1.0.1) (2025-06-06)
+
+
+### Bug Fixes
+
+* trigger build ([cbbe5a3](https://github.com/ysmolyar/release-please-test/commit/cbbe5a3f2984b32d9fde6fd1b87ec93940785fdd))
+
 ## 1.0.0 (2025-06-06)
 
 
