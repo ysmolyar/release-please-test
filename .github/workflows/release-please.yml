@@ -14,9 +14,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release-please
         with:
           token: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
           # this is a built-in strategy in release-please, see "Action Inputs"
           # for more options
           release-type: simple
-          skip-github-pull-request: true
+      
+      # Auto-merge release PRs
+      - name: Auto-merge release PR
+        if: ${{ steps.release-please.outputs.prs_created == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
+        run: |
+          # Get the PR numbers from the release-please output
+          echo "PRs created: ${{ steps.release-please.outputs.pr }}"
+          
+          # Parse PR URLs and extract PR numbers, then merge them
+          echo '${{ steps.release-please.outputs.pr }}' | jq -r '.number' | while read pr_number; do
+            if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
+              echo "Auto-merging PR #$pr_number"
+              gh pr merge "$pr_number" --merge --delete-branch
+            fi
+          done
