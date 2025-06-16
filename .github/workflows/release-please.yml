@@ -13,7 +13,9 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
       
       - uses: googleapis/release-please-action@v4
         id: release-please

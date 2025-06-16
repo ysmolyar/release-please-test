@@ -1,0 +1,91 @@
+name: 'Auto Release Please'
+description: 'Automated releases with auto-merge and automatic patch versioning'
+
+inputs:
+  token:
+    description: 'GitHub token for creating releases'
+    required: true
+  release-type:
+    description: 'Type of release to create'
+    required: false
+    default: 'simple'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+      
+    - name: Create release-please config
+      shell: bash
+      run: |
+        cat > release-please-config.json << EOF
+        {
+          "packages": {
+            ".": {
+              "release-type": "${{ inputs.release-type }}",
+              "bump-minor-pre-major": false,
+              "bump-patch-for-minor-pre-major": false,
+              "changelog-sections": [
+                "type: feat: Features",
+                "type: fix: Bug Fixes",
+                "type: docs: Documentation",
+                "type: style: Styles",
+                "type: refactor: Code Refactoring",
+                "type: perf: Performance Improvements",
+                "type: test: Tests",
+                "type: build: Builds",
+                "type: ci: Continuous Integration",
+                "type: chore: Chores",
+                "type: revert: Reverts",
+                "type: other: Other Changes"
+              ],
+              "commit-parser": {
+                "pattern": ".*",
+                "type": "fix"
+              }
+            }
+          }
+        }
+        EOF
+
+    - name: Create manifest file if it doesn't exist
+      shell: bash
+      run: |
+        if [ ! -f .release-please-manifest.json ]; then
+          echo '{".": "0.0.0"}' > .release-please-manifest.json
+        fi
+
+    - uses: googleapis/release-please-action@v4
+      id: release-please
+      with:
+        token: ${{ inputs.token }}
+        config-file: release-please-config.json
+
+    - name: Auto-merge release PR
+      if: ${{ steps.release-please.outputs.prs_created == 'true' }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        PR_DATA: ${{ steps.release-please.outputs.pr }}
+      shell: bash
+      run: |
+        echo "Release PR created, attempting to auto-merge..."
+        echo "PR Data: $PR_DATA"
+        
+        # Extract PR number from the JSON output
+        pr_number=$(echo "$PR_DATA" | jq -r '.number // empty')
+        
+        if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
+          echo "Auto-merging PR #$pr_number with squash commit"
+          gh pr merge "$pr_number" --squash --delete-branch
+        else
+          echo "Could not extract PR number from output"
+          echo "Attempting to find release PR by label..."
+          # Fallback: find PR by release-please label
+          pr_number=$(gh pr list --label "autorelease: pending" --json number --jq '.[0].number')
+          if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
+            echo "Found release PR #$pr_number via label, squash merging..."
+            gh pr merge "$pr_number" --squash --delete-branch
+          else
+            echo "No release PR found to merge"
+          fi
+        fi 
