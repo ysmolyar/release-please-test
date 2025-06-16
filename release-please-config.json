@@ -17,7 +17,11 @@
         "type: chore: Chores",
         "type: revert: Reverts",
         "type: other: Other Changes"
-      ]
+      ],
+      "commit-parser": {
+        "pattern": ".*",
+        "type": "fix"
+      }
     }
   }
 } 
