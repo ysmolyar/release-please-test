@@ -19,9 +19,7 @@ jobs:
         id: release-please
         with:
           token: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
-          # this is a built-in strategy in release-please, see "Action Inputs"
-          # for more options
-          release-type: simple
+          config-file: release-please-config.json
       
       # Auto-merge release PRs
       - name: Auto-merge release PR
