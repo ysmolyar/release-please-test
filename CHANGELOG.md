@@ -5,6 +5,17 @@
 
 ### Bug Fixes
 
+* chore(main): release 1.0.4 ([#6](https://github.com/ysmolyar/release-please-test/issues/6)) ([c11fda6](https://github.com/ysmolyar/release-please-test/commit/c11fda607aee1c458e719a36fce69b44de38eeed))
+* Merge branch 'main' of https://github.com/ysmolyar/release-please-test CHP-0 ([4bf6e44](https://github.com/ysmolyar/release-please-test/commit/4bf6e44e11bd2a11682cb0c9d9b97770d7c65585))
+* release pls ([2346fcb](https://github.com/ysmolyar/release-please-test/commit/2346fcbfa182a0e83bd19cd07ed4ede21dc12a05))
+* test ([483958b](https://github.com/ysmolyar/release-please-test/commit/483958b13d5e3176c0624b3740b715e92fe23d15))
+* test ([af03d23](https://github.com/ysmolyar/release-please-test/commit/af03d23d52879d1e2e7ee9d173cd3388f77b8e49))
+
+## [1.0.4](https://github.com/ysmolyar/release-please-test/compare/v1.0.3...v1.0.4) (2025-06-24)
+
+
+### Bug Fixes
+
 * Merge branch 'main' of https://github.com/ysmolyar/release-please-test CHP-0 ([4bf6e44](https://github.com/ysmolyar/release-please-test/commit/4bf6e44e11bd2a11682cb0c9d9b97770d7c65585))
 * release pls ([2346fcb](https://github.com/ysmolyar/release-please-test/commit/2346fcbfa182a0e83bd19cd07ed4ede21dc12a05))
 * test ([483958b](https://github.com/ysmolyar/release-please-test/commit/483958b13d5e3176c0624b3740b715e92fe23d15))
