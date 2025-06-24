@@ -1,3 +1,3 @@
 # release-please-test
 
-bump
+bum
