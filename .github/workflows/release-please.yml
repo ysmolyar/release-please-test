@@ -14,6 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Rewrite commit messages to add conventional prefixes
+        run: |
+          # Get the latest commit message
+          latest_commit_msg=$(git log -1 --pretty=%B)
+          
+          # Check if it already has a conventional commit prefix
+          if [[ ! "$latest_commit_msg" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE) ]]; then
+            echo "Adding 'fix:' prefix to commit message: $latest_commit_msg"
+            # Create a new commit with the fix: prefix
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --amend -m "fix: $latest_commit_msg"
+            git push --force-with-lease
+          else
+            echo "Commit already has conventional prefix: $latest_commit_msg"
+          fi
       
       - uses: googleapis/release-please-action@v4
         id: release-please
@@ -36,15 +55,7 @@ jobs:
           
           if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
             echo "Auto-merging PR #$pr_number with squash commit"
-            # Get the PR title and add 'fix:' prefix if it doesn't have a conventional commit prefix
-            pr_title=$(gh pr view "$pr_number" --json title --jq '.title')
-            if [[ ! "$pr_title" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE) ]]; then
-              echo "Adding 'fix:' prefix to commit message"
-              gh pr merge "$pr_number" --squash --delete-branch --title "fix: $pr_title"
-            else
-              echo "Commit already has conventional prefix, merging as-is"
-              gh pr merge "$pr_number" --squash --delete-branch
-            fi
+            gh pr merge "$pr_number" --squash --delete-branch
           else
             echo "Could not extract PR number from output"
             echo "Attempting to find release PR by label..."
@@ -52,14 +63,7 @@ jobs:
             pr_number=$(gh pr list --label "autorelease: pending" --json number --jq '.[0].number')
             if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
               echo "Found release PR #$pr_number via label, squash merging..."
-              pr_title=$(gh pr view "$pr_number" --json title --jq '.title')
-              if [[ ! "$pr_title" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE) ]]; then
-                echo "Adding 'fix:' prefix to commit message"
-                gh pr merge "$pr_number" --squash --delete-branch --title "fix: $pr_title"
-              else
-                echo "Commit already has conventional prefix, merging as-is"
-                gh pr merge "$pr_number" --squash --delete-branch
-              fi
+              gh pr merge "$pr_number" --squash --delete-branch
             else
               echo "No release PR found to merge"
             fi
