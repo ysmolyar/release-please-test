@@ -30,6 +30,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit --amend -m "fix: $latest_commit_msg"
             git push --force-with-lease
+            echo "Commit amended and pushed successfully"
           else
             echo "Commit already has conventional prefix: $latest_commit_msg"
           fi
@@ -38,7 +39,7 @@ jobs:
         id: release-please
         with:
           token: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
-          config-file: release-please-config.json
+          release-type: simple
       
       # Auto-merge release PRs
       - name: Auto-merge release PR
