@@ -41,10 +41,39 @@ jobs:
           git tag ${{ steps.version.outputs.version }}
           git push origin ${{ steps.version.outputs.version }}
       
+      - name: Generate Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                    "title": "## 🚀 Features",
+                    "labels": ["feat", "feature"]
+                },
+                {
+                    "title": "## 🐛 Bug Fixes", 
+                    "labels": ["fix", "bug"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies"]
+                },
+                {
+                    "title": "## 📝 Documentation",
+                    "labels": ["docs", "documentation"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
