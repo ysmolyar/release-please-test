@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/ysmolyar/release-please-test/compare/v1.0.8...v1.0.9) (2025-06-25)
+
+
+### Bug Fixes
+
+* bump ([4f4e3ad](https://github.com/ysmolyar/release-please-test/commit/4f4e3ad467860939f3c8a394067857298d5549de))
+
 ## [1.0.8](https://github.com/ysmolyar/release-please-test/compare/v1.0.7...v1.0.8) (2025-06-25)
 
 
