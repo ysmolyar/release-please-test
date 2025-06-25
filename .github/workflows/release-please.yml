@@ -5,74 +5,49 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
-name: release-please
+name: auto-release
 
 jobs:
-  release-please:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: Rewrite commit messages to add conventional prefixes
+      - name: Get current version
+        id: version
         run: |
-          # Get the latest commit message
-          latest_commit_msg=$(git log -1 --pretty=%B)
+          # Get the latest version from git tags
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $latest_tag"
           
-          # Skip if this is already a release-please commit
-          if [[ "$latest_commit_msg" =~ ^(chore|fix)\(.*\):\ release ]]; then
-            echo "Skipping release-please commit: $latest_commit_msg"
-            exit 0
-          fi
+          # Extract version numbers
+          version_parts=(${latest_tag#v})
+          major=${version_parts[0]%.*}
+          minor=${version_parts[0]#*.}
+          minor=${minor%.*}
+          patch=${version_parts[0]##*.}
           
-          # Check if it already has a conventional commit prefix (must end with colon)
-          if [[ ! "$latest_commit_msg" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE): ]]; then
-            echo "Adding 'fix:' prefix to commit message: $latest_commit_msg"
-            # Create a new commit with the fix: prefix instead of amending
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            # Create a new commit with the same changes but proper conventional commit message
-            git commit --allow-empty -m "fix: $latest_commit_msg"
-            git push
-            echo "New commit created and pushed successfully"
-          else
-            echo "Commit already has conventional prefix: $latest_commit_msg"
-          fi
+          # Increment patch version
+          new_patch=$((patch + 1))
+          new_version="v$major.$minor.$new_patch"
+          
+          echo "New version: $new_version"
+          echo "version=$new_version" >> $GITHUB_OUTPUT
       
-      - uses: googleapis/release-please-action@v4
-        id: release-please
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
-          release-type: simple
-      
-      # Auto-merge release PRs
-      - name: Auto-merge release PR
-        if: ${{ steps.release-please.outputs.prs_created == 'true' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PLEASE_GH_TOKEN }}
-          PR_DATA: ${{ steps.release-please.outputs.pr }}
-        run: |
-          echo "Release PR created, attempting to auto-merge..."
-          echo "PR Data: $PR_DATA"
-          
-          # Extract PR number from the JSON output
-          pr_number=$(echo "$PR_DATA" | jq -r '.number // empty')
-          
-          if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
-            echo "Auto-merging PR #$pr_number with squash commit"
-            gh pr merge "$pr_number" --squash --delete-branch
-          else
-            echo "Could not extract PR number from output"
-            echo "Attempting to find release PR by label..."
-            # Fallback: find PR by release-please label
-            pr_number=$(gh pr list --label "autorelease: pending" --json number --jq '.[0].number')
-            if [ ! -z "$pr_number" ] && [ "$pr_number" != "null" ]; then
-              echo "Found release PR #$pr_number via label, squash merging..."
-              gh pr merge "$pr_number" --squash --delete-branch
-            else
-              echo "No release PR found to merge"
-            fi
-          fi
+          tag_name: ${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
