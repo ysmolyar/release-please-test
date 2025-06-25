@@ -23,12 +23,9 @@ jobs:
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $latest_tag"
           
-          # Extract version numbers
-          version_parts=(${latest_tag#v})
-          major=${version_parts[0]%.*}
-          minor=${version_parts[0]#*.}
-          minor=${minor%.*}
-          patch=${version_parts[0]##*.}
+          # Extract version numbers (remove 'v' prefix and split by dots)
+          version_without_v=${latest_tag#v}
+          IFS='.' read -r major minor patch <<< "$version_without_v"
           
           # Increment patch version
           new_patch=$((patch + 1))
