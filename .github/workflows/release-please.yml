@@ -31,12 +31,13 @@ jobs:
           # Check if it already has a conventional commit prefix (must end with colon)
           if [[ ! "$latest_commit_msg" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE): ]]; then
             echo "Adding 'fix:' prefix to commit message: $latest_commit_msg"
-            # Create a new commit with the fix: prefix
+            # Create a new commit with the fix: prefix instead of amending
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit --amend -m "fix: $latest_commit_msg"
-            git push --force-with-lease
-            echo "Commit amended and pushed successfully"
+            # Create a new commit with the same changes but proper conventional commit message
+            git commit --allow-empty -m "fix: $latest_commit_msg"
+            git push
+            echo "New commit created and pushed successfully"
           else
             echo "Commit already has conventional prefix: $latest_commit_msg"
           fi
