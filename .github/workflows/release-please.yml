@@ -46,28 +46,29 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v5
         with:
           mode: "COMMIT"
+          outputFile: "CHANGELOG.md"
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "template": "# Changelog\n\n## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n#{{CHANGELOG}}\n\n#{{UNCATEGORIZED}}",
               "categories": [
                 {
-                    "title": "## 🚀 Features",
+                    "title": "### Features",
                     "labels": ["feat", "feature"]
                 },
                 {
-                    "title": "## 🐛 Bug Fixes", 
+                    "title": "### Bug Fixes", 
                     "labels": ["fix", "bug"]
                 },
                 {
-                    "title": "## 📦 Dependencies",
+                    "title": "### Dependencies",
                     "labels": ["dependencies"]
                 },
                 {
-                    "title": "## 📝 Documentation",
+                    "title": "### Documentation",
                     "labels": ["docs", "documentation"]
                 },
                 {
-                    "title": "## 🔧 General",
+                    "title": "### General",
                     "labels": []
                 }
               ],
@@ -79,24 +80,8 @@ jobs:
                 }
               ]
             }
-          exportCache: true
-          exportOnly: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Write Changelog to File
-        run: |
-          echo "# Changelog" > CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "## ${{ steps.version.outputs.version }}" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "${{ steps.changelog.outputs.changelog }}" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "---" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          if [ -f CHANGELOG.md.backup ]; then
-            cat CHANGELOG.md.backup >> CHANGELOG.md
-          fi
       
       - name: Commit and Push CHANGELOG.md
         run: |
