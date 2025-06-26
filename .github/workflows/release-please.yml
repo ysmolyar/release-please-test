@@ -65,6 +65,10 @@ jobs:
                 {
                     "title": "## 📝 Documentation",
                     "labels": ["docs", "documentation"]
+                },
+                {
+                    "title": "## 🔧 General",
+                    "labels": []
                 }
               ],
               "label_extractor": [
