@@ -45,11 +45,11 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          mode: "COMMIT"
+          mode: "PREPEND"
           outputFile: "CHANGELOG.md"
           configurationJson: |
             {
-              "template": "# Changelog\n\n## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n#{{CHANGELOG}}\n\n#{{UNCATEGORIZED}}",
+              "template": "## [${{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/${{FROM_TAG}}...${{TO_TAG}}) (${{RELEASE_DATE}})\n\n${{CHANGELOG}}\n${{UNCATEGORIZED}}",
               "categories": [
                 {
                     "title": "### Features",
@@ -66,10 +66,6 @@ jobs:
                 {
                     "title": "### Documentation",
                     "labels": ["docs", "documentation"]
-                },
-                {
-                    "title": "### General",
-                    "labels": []
                 }
               ],
               "label_extractor": [
