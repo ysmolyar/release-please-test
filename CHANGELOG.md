@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.0.20](https://github.com/ysmolyar/release-please-test/compare/v1.0.19...v1.0.20) (#{{RELEASE_DATE}})
+
+### Changes
+
+- update changelog logic
+
+
+- update changelog logic
+
+
+
 ## [1.0.9](https://github.com/ysmolyar/release-please-test/compare/v1.0.8...v1.0.9) (2025-06-25)
 
 
