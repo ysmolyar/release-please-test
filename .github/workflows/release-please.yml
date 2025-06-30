@@ -45,8 +45,6 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          mode: "PREPEND"
-          outputFile: "CHANGELOG.md"
           configurationJson: |
             {
               "template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n#{{CHANGELOG}}\n#{{UNCATEGORIZED}}",
@@ -78,6 +76,36 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update CHANGELOG.md
+        run: |
+          # Create a temporary file with the new changelog entry
+          echo "${{ steps.changelog.outputs.changelog }}" > temp_changelog.md
+          echo "" >> temp_changelog.md
+          
+          # If CHANGELOG.md exists, append it to the temp file
+          if [ -f "CHANGELOG.md" ]; then
+            # Skip the first line if it's just "# Changelog"
+            if [ "$(head -n 1 CHANGELOG.md)" = "# Changelog" ]; then
+              echo "# Changelog" > new_changelog.md
+              echo "" >> new_changelog.md
+              cat temp_changelog.md >> new_changelog.md
+              tail -n +2 CHANGELOG.md >> new_changelog.md
+            else
+              echo "# Changelog" > new_changelog.md
+              echo "" >> new_changelog.md
+              cat temp_changelog.md >> new_changelog.md
+              cat CHANGELOG.md >> new_changelog.md
+            fi
+          else
+            echo "# Changelog" > new_changelog.md
+            echo "" >> new_changelog.md
+            cat temp_changelog.md >> new_changelog.md
+          fi
+          
+          # Replace the original file
+          mv new_changelog.md CHANGELOG.md
+          rm temp_changelog.md
       
       - name: Commit and Push CHANGELOG.md
         run: |
