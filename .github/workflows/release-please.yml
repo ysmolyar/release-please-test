@@ -79,8 +79,17 @@ jobs:
       
       - name: Update CHANGELOG.md
         run: |
+          # Get the changelog output and check if it's meaningful
+          changelog_content="${{ steps.changelog.outputs.changelog }}"
+          
+          # Skip if changelog is empty, "no changes", or just whitespace
+          if [[ -z "$changelog_content" || "$changelog_content" == *"no changes"* || "$changelog_content" =~ ^[[:space:]]*$ ]]; then
+            echo "No meaningful changelog content generated, skipping changelog update"
+            exit 0
+          fi
+          
           # Create a temporary file with the new changelog entry
-          echo "${{ steps.changelog.outputs.changelog }}" > temp_changelog.md
+          echo "$changelog_content" > temp_changelog.md
           echo "" >> temp_changelog.md
           
           # If CHANGELOG.md exists, append it to the temp file
@@ -111,9 +120,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -m "docs: update changelog for ${{ steps.version.outputs.version }}" || echo "No changes to commit"
-          git push origin main
+          
+          # Only commit if there are changes to CHANGELOG.md
+          if git diff --quiet CHANGELOG.md; then
+            echo "No changes to CHANGELOG.md, skipping commit"
+          else
+            git add CHANGELOG.md
+            git commit -m "docs: update changelog for ${{ steps.version.outputs.version }}"
+            git push origin main
+          fi
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
