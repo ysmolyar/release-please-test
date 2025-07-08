@@ -46,31 +46,28 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v5
         with:
-          commitMode: true
-          fetchViaCommits: true
+          mode: "COMMIT"
+          fromTag: ${{ steps.version.outputs.previous_version }}
+          toTag: ${{ steps.version.outputs.version }}
           configurationJson: |
             {
-              "template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n#{{CHANGELOG}}\n#{{UNCATEGORIZED}}",
+              "template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n#{{CHANGELOG}}\n\n#{{UNCATEGORIZED}}",
               "categories": [
                 {
-                    "title": "### Features",
-                    "labels": ["feat", "feature"]
+                  "title": "### Features",
+                  "labels": ["feat", "feature"]
                 },
                 {
-                    "title": "### Bug Fixes", 
-                    "labels": ["fix", "bug"]
+                  "title": "### Bug Fixes", 
+                  "labels": ["fix", "bug"]
                 },
                 {
-                    "title": "### Dependencies",
-                    "labels": ["dependencies"]
+                  "title": "### Documentation",
+                  "labels": ["docs", "documentation"]
                 },
                 {
-                    "title": "### Documentation",
-                    "labels": ["docs", "documentation"]
-                },
-                {
-                    "title": "### Changes",
-                    "labels": []
+                  "title": "### Changes",
+                  "labels": []
                 }
               ],
               "label_extractor": [
@@ -82,14 +79,12 @@ jobs:
               ],
               "transformers": [
                 {
-                  "pattern": "[\\-\\*] (.*)",
+                  "pattern": "^(.*)$",
                   "target": "* $1"
                 }
               ],
               "max_tags_to_fetch": 200,
-              "max_pull_requests": 200,
               "max_back_track_time_days": 365,
-              "exclude_merge_branches": [],
               "sort": "ASC",
               "template_fallback": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n### Changes\n\n#{{UNCATEGORIZED}}",
               "empty_template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n### Changes\n\n* No changes in this release",
@@ -100,16 +95,11 @@ jobs:
       
       - name: Update CHANGELOG.md
         run: |
-          # Always update changelog - no more "no changes" check
+          # Get the changelog content from the action
           changelog_content="${{ steps.changelog.outputs.changelog }}"
           
-          # If changelog is empty, create a basic entry
-          if [[ -z "$changelog_content" || "$changelog_content" =~ ^[[:space:]]*$ ]]; then
-            changelog_content="## [v${{ steps.version.outputs.version }}](https://github.com/ysmolyar/release-please-test/compare/v${{ steps.version.outputs.previous_version }}...v${{ steps.version.outputs.version }}) ($(date '+%Y-%m-%d'))\n\n### Changes\n\n* Release v${{ steps.version.outputs.version }}"
-          fi
-          
           # Create a temporary file with the new changelog entry
-          echo -e "$changelog_content" > temp_changelog.md
+          echo "$changelog_content" > temp_changelog.md
           echo "" >> temp_changelog.md
           
           # If CHANGELOG.md exists, append it to the temp file
