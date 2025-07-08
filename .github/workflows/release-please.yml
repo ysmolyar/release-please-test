@@ -95,46 +95,49 @@ jobs:
       
       - name: Update CHANGELOG.md
         run: |
-          # Get the changelog content from the action
+          # Get the changelog content from the Release Changelog Builder action
           changelog_content="${{ steps.changelog.outputs.changelog }}"
           
-          # Create a temporary file with the new changelog entry
-          echo "$changelog_content" > temp_changelog.md
-          echo "" >> temp_changelog.md
-          
-          # If CHANGELOG.md exists, append it to the temp file
+          # Create the new changelog by prepending the new entry
           if [ -f "CHANGELOG.md" ]; then
-            # Skip the first line if it's just "# Changelog"
-            if [ "$(head -n 1 CHANGELOG.md)" = "# Changelog" ]; then
-              echo "# Changelog" > new_changelog.md
-              echo "" >> new_changelog.md
-              cat temp_changelog.md >> new_changelog.md
-              tail -n +2 CHANGELOG.md >> new_changelog.md
-            else
-              echo "# Changelog" > new_changelog.md
-              echo "" >> new_changelog.md
-              cat temp_changelog.md >> new_changelog.md
-              cat CHANGELOG.md >> new_changelog.md
-            fi
+            # Read existing changelog and prepend new entry
+            {
+              echo "# Changelog"
+              echo ""
+              echo "$changelog_content"
+              echo ""
+              # Skip the header if it exists, otherwise include everything
+              if [ "$(head -n 1 CHANGELOG.md)" = "# Changelog" ]; then
+                tail -n +3 CHANGELOG.md
+              else
+                cat CHANGELOG.md
+              fi
+            } > new_changelog.md
           else
-            echo "# Changelog" > new_changelog.md
-            echo "" >> new_changelog.md
-            cat temp_changelog.md >> new_changelog.md
+            # Create new changelog file
+            {
+              echo "# Changelog"
+              echo ""
+              echo "$changelog_content"
+            } > new_changelog.md
           fi
           
           # Replace the original file
           mv new_changelog.md CHANGELOG.md
-          rm temp_changelog.md
       
       - name: Commit and Push CHANGELOG.md
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Always commit changelog updates
-          git add CHANGELOG.md
-          git commit -m "docs: update changelog for ${{ steps.version.outputs.version }}"
-          git push origin main
+          # Check if there are changes to commit
+          if git diff --quiet CHANGELOG.md; then
+            echo "No changes to CHANGELOG.md, skipping commit"
+          else
+            git add CHANGELOG.md
+            git commit -m "docs: update changelog for ${{ steps.version.outputs.version }}"
+            git push origin main
+          fi
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
