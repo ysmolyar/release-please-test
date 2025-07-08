@@ -49,6 +49,26 @@ jobs:
           mode: "COMMIT"
           fromTag: ${{ steps.version.outputs.previous_version }}
           toTag: ${{ steps.version.outputs.version }}
+          configurationJson: |
+            {
+              "template": "## [#{{TO_TAG_VERSION}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_YEAR}}-#{{RELEASE_MONTH}}-#{{RELEASE_DAY}})\n\n\n#{{CHANGELOG}}",
+              "categories": [
+                {
+                  "title": "### Bug Fixes\n\n",
+                  "labels": ["fix", "bug", ""]
+                }
+              ],
+              "transformers": [
+                {
+                  "pattern": "^(.*)$",
+                  "target": "* $1 ([#{{COMMIT_SHA_SHORT}}](https://github.com/ysmolyar/release-please-test/commit/#{{COMMIT_SHA}}))"
+                }
+              ],
+              "tag_resolver": {
+                "method": "semver"
+              },
+              "sort": "ASC"
+            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
