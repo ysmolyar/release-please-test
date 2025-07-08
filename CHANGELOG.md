@@ -1,5 +1,12 @@
 # Changelog
 
+## 📦 Other
+
+- docs: update changelog for v1.0.25
+- refine action
+
+
+
 ## [v1.0.25](https://github.com/ysmolyar/release-please-test/compare/v1.0.24...v1.0.25) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})
 
 ### Changes
