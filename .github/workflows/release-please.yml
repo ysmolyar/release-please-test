@@ -49,47 +49,6 @@ jobs:
           mode: "COMMIT"
           fromTag: ${{ steps.version.outputs.previous_version }}
           toTag: ${{ steps.version.outputs.version }}
-          configurationJson: |
-            {
-              "template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})\n\n#{{CHANGELOG}}\n\n#{{UNCATEGORIZED}}",
-              "categories": [
-                {
-                  "title": "### Features",
-                  "labels": ["feat", "feature"]
-                },
-                {
-                  "title": "### Bug Fixes", 
-                  "labels": ["fix", "bug"]
-                },
-                {
-                  "title": "### Documentation",
-                  "labels": ["docs", "documentation"]
-                },
-                {
-                  "title": "### Changes",
-                  "labels": []
-                }
-              ],
-              "label_extractor": [
-                {
-                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
-                  "on_property": "title",
-                  "target": "$1"
-                }
-              ],
-              "transformers": [
-                {
-                  "pattern": "^(.*)$",
-                  "target": "* $1"
-                }
-              ],
-              "max_tags_to_fetch": 200,
-              "max_back_track_time_days": 365,
-              "sort": "ASC",
-              "template_fallback": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})\n\n### Changes\n\n#{{UNCATEGORIZED}}",
-              "empty_template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})\n\n### Changes\n\n* No changes in this release",
-              "trim_values": false
-            }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
