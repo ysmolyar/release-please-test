@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Rewrite commit messages to add conventional prefixes
         run: |
@@ -31,13 +32,15 @@ jobs:
           # Check if it already has a conventional commit prefix (must end with colon)
           if [[ ! "$latest_commit_msg" =~ ^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|BREAKING CHANGE): ]]; then
             echo "Adding 'fix:' prefix to commit message: $latest_commit_msg"
-            # Create a new commit with the fix: prefix instead of amending
+            
+            # Configure git
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            # Create a new commit with the same changes but proper conventional commit message
-            git commit --allow-empty -m "fix: $latest_commit_msg"
-            git push
-            echo "New commit created and pushed successfully"
+            
+            # Amend the commit message instead of creating a new commit
+            git commit --amend -m "fix: $latest_commit_msg"
+            git push --force-with-lease
+            echo "Commit message amended and pushed successfully"
           else
             echo "Commit already has conventional prefix: $latest_commit_msg"
           fi
@@ -47,6 +50,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: simple
+          config-file: .release-please-config.json
       
       # Auto-merge release PRs
       - name: Auto-merge release PR
