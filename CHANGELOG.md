@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.0.24](https://github.com/ysmolyar/release-please-test/compare/v1.0.23...v1.0.24) (#{{RELEASE_DATE}})
+
+### Changes
+
+- * docs: update changelog for v1.0.23
+- * refine action
+
+
+
+- * docs: update changelog for v1.0.23
+- * refine action
+
+
 ## [v1.0.23](https://github.com/ysmolyar/release-please-test/compare/v1.0.22...v1.0.23) (#{{RELEASE_DATE}})
 
 ### Documentation
