@@ -1,5 +1,10 @@
 # Changelog
 
+## [#{{TO_TAG_VERSION}}](https://github.com/ysmolyar/release-please-test/compare/v1.0.26...v1.0.27) (#{{RELEASE_YEAR}}-#{{RELEASE_MONTH}}-#{{RELEASE_DAY}})
+
+
+
+
 ## 📦 Other
 
 - docs: update changelog for v1.0.25
