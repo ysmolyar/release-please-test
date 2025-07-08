@@ -51,7 +51,7 @@ jobs:
           toTag: ${{ steps.version.outputs.version }}
           configurationJson: |
             {
-              "template": "## [#{{TO_TAG_VERSION}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_YEAR}}-#{{RELEASE_MONTH}}-#{{RELEASE_DAY}})\n\n\n#{{CHANGELOG}}",
+              "template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{TO_TAG_DATE}})\n\n\n#{{CHANGELOG}}",
               "categories": [
                 {
                   "title": "### Bug Fixes\n\n",
