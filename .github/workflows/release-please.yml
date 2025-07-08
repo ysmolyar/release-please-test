@@ -77,11 +77,17 @@ jobs:
                   "target": "$1"
                 }
               ],
+              "transformers": [
+                {
+                  "pattern": "^(.*)$",
+                  "target": "* $1"
+                }
+              ],
               "max_tags_to_fetch": 200,
               "max_back_track_time_days": 365,
               "sort": "ASC",
-              "template_fallback": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n### Changes\n\n#{{UNCATEGORIZED}}",
-              "empty_template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DATE}})\n\n### Changes\n\n* No changes in this release",
+              "template_fallback": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})\n\n### Changes\n\n#{{UNCATEGORIZED}}",
+              "empty_template": "## [#{{TO_TAG}}](https://github.com/ysmolyar/release-please-test/compare/#{{FROM_TAG}}...#{{TO_TAG}}) (#{{RELEASE_DAY}}-#{{RELEASE_MONTH}}-#{{RELEASE_YEAR}})\n\n### Changes\n\n* No changes in this release",
               "trim_values": false
             }
         env:
@@ -92,11 +98,6 @@ jobs:
           # Get the changelog content from the Release Changelog Builder action
           changelog_content="${{ steps.changelog.outputs.changelog }}"
           
-          # Debug: Show what we got from the action
-          echo "Changelog content received:"
-          echo "$changelog_content"
-          echo "--- End of changelog content ---"
-          
           # Create the new changelog by prepending the new entry
           if [ -f "CHANGELOG.md" ]; then
             # Read existing changelog and prepend new entry
@@ -105,7 +106,7 @@ jobs:
               echo ""
               echo "$changelog_content"
               echo ""
-              # Skip the header and empty line if they exist
+              # Skip the header if it exists, otherwise include everything
               if [ "$(head -n 1 CHANGELOG.md)" = "# Changelog" ]; then
                 tail -n +3 CHANGELOG.md
               else
