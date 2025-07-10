@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.10](https://github.com/ysmolyar/release-please-test/compare/v1.0.9...v1.0.10) (2025-07-10)
+
+
+### Bug Fixes
+
+* Merge branch 'main' of https://github.com/ysmolyar/release-please-test ([b1aacd2](https://github.com/ysmolyar/release-please-test/commit/b1aacd20046c2884e56cf0f75595a72bce1d9a81))
+* update ([5f4d2da](https://github.com/ysmolyar/release-please-test/commit/5f4d2daf9d778ef7e24a693c9e6ad00f4dff88aa))
+* update ([d713d5a](https://github.com/ysmolyar/release-please-test/commit/d713d5a0614f875ac03ff172d372cd0840c08439))
+
 ## [1.0.9](https://github.com/ysmolyar/release-please-test/compare/v1.0.8...v1.0.9) (2025-06-25)
 
 
